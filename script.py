@@ -26,30 +26,31 @@ def focus_on_chrome_window():
 
     # Extract the window ID from the output
     window_id = stdout.strip().decode()
+    command = f'xdotool windowfocus {window_id}'
+    subprocess.run(command, shell=True)
+    # if window_id:
+    #     # Use xdotool to check if the window is visible
+    #     command = f'xdotool getwindowgeometry --shell {window_id}'
+    #     process = subprocess.Popen(
+    #         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #     stdout, stderr = process.communicate()
 
-    if window_id:
-        # Use xdotool to check if the window is visible
-        command = f'xdotool getwindowgeometry --shell {window_id}'
-        process = subprocess.Popen(
-            command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
+    #     # Extract the window visibility from the output
+    #     visibility = stdout.strip().decode()
+    #     visibility = dict(item.split('=') for item in visibility.split('\n'))
 
-        # Extract the window visibility from the output
-        visibility = stdout.strip().decode()
-        visibility = dict(item.split('=') for item in visibility.split('\n'))
-
-        if visibility['MAP_STATE'] == 'IsViewable':
-            # The window is already visible, so just focus on it
-            command = f'xdotool windowfocus {window_id}'
-            subprocess.run(command, shell=True)
-            print("Focused on Chrome browser window")
-        else:
-            # The window is not visible, so bring it to the front
-            command = f'xdotool windowactivate {window_id}'
-            subprocess.run(command, shell=True)
-            print("Chrome browser window brought to the front")
-    else:
-        print("Chrome browser window not found")
+    #     if visibility['MAP_STATE'] == 'IsViewable':
+    #         # The window is already visible, so just focus on it
+    #         command = f'xdotool windowfocus {window_id}'
+    #         subprocess.run(command, shell=True)
+    #         print("Focused on Chrome browser window")
+    #     else:
+    #         # The window is not visible, so bring it to the front
+    #         command = f'xdotool windowactivate {window_id}'
+    #         subprocess.run(command, shell=True)
+    #         print("Chrome browser window brought to the front")
+    # else:
+    #     print("Chrome browser window not found")
 
 
 def find_image_on_screen():
@@ -71,8 +72,10 @@ def find_image_on_screen():
                 center_y = point[1] + template_height // 2
                 center_coordinates.append((center_x, center_y))
             return center_coordinates[0]
-        except:
-            if (datetime.now()-init).seconds > 10:
+        except Exception as e:
+            print(e)
+            print(traceback.format_exc())
+            if (datetime.now()-init).seconds > 20:
                 print('input_box not found')
                 raise Exception
 
@@ -131,6 +134,13 @@ def passCloudflareCheck(driver):
                     focus_on_chrome_window()
                 except:
                     print('error occured while focusing on chrome window')
+                try:
+                    WebDriverWait(driver, 25).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#challenge-stage > div > label > input[type=checkbox]')))
+                except:
+                    print('verify box not loaded after 25 sec')
+                    driver.maximize_window()
+                    driver.refresh()
+                    continue
                 x, y = find_image_on_screen()
                 if x != None:
                     simulate_random_mouse_movement()
@@ -185,9 +195,9 @@ if __name__ == "__main__":
     links = []
     try:
         chrome_options = uc.ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        # chrome_options.add_argument("--enable-gpu")
+        # chrome_options.add_argument('--no-sandbox')
+        # chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument("--enable-gpu")
         driver = uc.Chrome(options=chrome_options)
     except Exception as e:
         print('failed to start browser')
