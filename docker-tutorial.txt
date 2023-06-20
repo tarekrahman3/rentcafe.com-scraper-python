@@ -1,0 +1,2 @@
+docker build -t rentcafe .
+docker run -it --rm -v "$(pwd)":/app -e FILE_PATH="/app/atlanta-property-links-may-20.txt" -e EXPORT_FILE_NAME="/app/export_file.json" rentcafe
