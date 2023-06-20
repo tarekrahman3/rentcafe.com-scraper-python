@@ -53,8 +53,8 @@ def focus_on_chrome_window():
     #     print("Chrome browser window not found")
 
 
-def find_image_on_screen():
-    template = cv2.imread('input_box.png', cv2.IMREAD_GRAYSCALE)
+def find_image_on_screen(img_path):
+    template = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     template_height, template_width = template.shape[:2]
     init = datetime.now()
     while True:
@@ -130,18 +130,25 @@ def passCloudflareCheck(driver):
             print('Handling Cloudflare browser check...')
             time.sleep(2)
             try:
+                # try:
+                #     focus_on_chrome_window()
+                # except:
+                #     print('error occured while focusing on chrome window')
+                # try:
+                #     WebDriverWait(driver, 25).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type=checkbox]')))
+                # except:
+                #     print('verify box not loaded after 25 sec')
+                #     driver.save_screenshot('/app/screenshot.png')
+                #     driver.maximize_window()
+                #     driver.refresh()
+                #     continue
                 try:
-                    focus_on_chrome_window()
+                    x, y = find_image_on_screen('input_box.png')
                 except:
-                    print('error occured while focusing on chrome window')
-                try:
-                    WebDriverWait(driver, 25).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#challenge-stage > div > label > input[type=checkbox]')))
-                except:
-                    print('verify box not loaded after 25 sec')
-                    driver.maximize_window()
-                    driver.refresh()
-                    continue
-                x, y = find_image_on_screen()
+                    s = str(driver.page_source)
+                    with open ("c.html",'w', encoding='utf-8') as f:
+                        f.write(s)
+                    x, y = find_image_on_screen('input_box2.png')
                 if x != None:
                     simulate_random_mouse_movement()
                     current_mouse_pos = pyautogui.position()
