@@ -18,7 +18,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 def focus_on_chrome_window():
-    # Use xdotool to search for the Chrome window name ending with " - Google Chrome"
     command = 'xdotool search --name ".* - Google Chrome$"'
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -28,29 +27,6 @@ def focus_on_chrome_window():
     window_id = stdout.strip().decode()
     command = f'xdotool windowfocus {window_id}'
     subprocess.run(command, shell=True)
-    # if window_id:
-    #     # Use xdotool to check if the window is visible
-    #     command = f'xdotool getwindowgeometry --shell {window_id}'
-    #     process = subprocess.Popen(
-    #         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    #     stdout, stderr = process.communicate()
-
-    #     # Extract the window visibility from the output
-    #     visibility = stdout.strip().decode()
-    #     visibility = dict(item.split('=') for item in visibility.split('\n'))
-
-    #     if visibility['MAP_STATE'] == 'IsViewable':
-    #         # The window is already visible, so just focus on it
-    #         command = f'xdotool windowfocus {window_id}'
-    #         subprocess.run(command, shell=True)
-    #         print("Focused on Chrome browser window")
-    #     else:
-    #         # The window is not visible, so bring it to the front
-    #         command = f'xdotool windowactivate {window_id}'
-    #         subprocess.run(command, shell=True)
-    #         print("Chrome browser window brought to the front")
-    # else:
-    #     print("Chrome browser window not found")
 
 
 def find_image_on_screen(img_path):
@@ -134,14 +110,6 @@ def passCloudflareCheck(driver):
                 #     focus_on_chrome_window()
                 # except:
                 #     print('error occured while focusing on chrome window')
-                # try:
-                #     WebDriverWait(driver, 25).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type=checkbox]')))
-                # except:
-                #     print('verify box not loaded after 25 sec')
-                #     driver.save_screenshot('/app/screenshot.png')
-                #     driver.maximize_window()
-                #     driver.refresh()
-                #     continue
                 try:
                     x, y = find_image_on_screen('input_box.png')
                 except:
