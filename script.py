@@ -74,8 +74,8 @@ def find_image_on_screen(img_path):
             return center_coordinates[0]
         except Exception as e:
             print(e)
-            print(traceback.format_exc())
-            if (datetime.now()-init).seconds > 20:
+            # print(traceback.format_exc())
+            if (datetime.now()-init).seconds > 10:
                 print('input_box not found')
                 raise Exception
 
@@ -145,10 +145,15 @@ def passCloudflareCheck(driver):
                 try:
                     x, y = find_image_on_screen('input_box.png')
                 except:
+                    #WebDriverWait(driver, 25).until(EC.presence_of_element_located((By.XPATH, '//input[@type="checkbox"]')))
+                    driver.save_screenshot('/app/clouflare.png')
                     s = str(driver.page_source)
-                    with open ("c.html",'w', encoding='utf-8') as f:
+                    with open ("clouflare.html",'w', encoding='utf-8') as f:
                         f.write(s)
-                    x, y = find_image_on_screen('input_box2.png')
+                    try:
+                        x, y = find_image_on_screen('input_box2.png')
+                    except:
+                        break
                 if x != None:
                     simulate_random_mouse_movement()
                     current_mouse_pos = pyautogui.position()
@@ -202,10 +207,11 @@ if __name__ == "__main__":
     links = []
     try:
         chrome_options = uc.ChromeOptions()
-        # chrome_options.add_argument('--no-sandbox')
-        # chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument("--enable-gpu")
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        # chrome_options.add_argument("--enable-gpu")
         driver = uc.Chrome(options=chrome_options)
+        driver.maximize_window()
     except Exception as e:
         print('failed to start browser')
         print("error:", str(e))
